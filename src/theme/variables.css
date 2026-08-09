@@ -1,0 +1,181 @@
+/**
+ * Ionic CSS Variables
+ * -----------------------------------------------------
+ * Custom Premium Blue Theme (Luxe Blue / ThreadBlue)
+ * Inspired by Facebook's trust/cleanliness, but modern and polished.
+ */
+
+:root {
+  /** Primary: Modern Trust Blue **/
+  --ion-color-primary: #1a56db;
+  --ion-color-primary-rgb: 26, 86, 219;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #174cb2;
+  --ion-color-primary-tint: #3b71e8;
+
+  /** Secondary: Sky/Teal Accent for highlights and tags **/
+  --ion-color-secondary: #0ea5e9;
+  --ion-color-secondary-rgb: 14, 165, 233;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #0c92cf;
+  --ion-color-secondary-tint: #38bdf8;
+
+  /** Tertiary: Indigo Accent **/
+  --ion-color-tertiary: #4f46e5;
+  --ion-color-tertiary-rgb: 79, 70, 229;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #4338ca;
+  --ion-color-tertiary-tint: #6366f1;
+
+  /** Success: Vibrant emerald green for 'New' condition and actions **/
+  --ion-color-success: #10b981;
+  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #0e9f6e;
+  --ion-color-success-tint: #34d399;
+
+  /** Warning: Amber orange for 'Good' condition **/
+  --ion-color-warning: #f59e0b;
+  --ion-color-warning-rgb: 245, 158, 11;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #d97706;
+  --ion-color-warning-tint: #fbbf24;
+
+  /** Danger: Soft crimson red **/
+  --ion-color-danger: #ef4444;
+  --ion-color-danger-rgb: 239, 68, 68;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #dc2626;
+  --ion-color-danger-tint: #f87171;
+
+  /** Dark: Deep Slate **/
+  --ion-color-dark: #0f172a;
+  --ion-color-dark-rgb: 15, 23, 42;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #0b101f;
+  --ion-color-dark-tint: #1e293b;
+
+  /** Medium: Muted Slate **/
+  --ion-color-medium: #64748b;
+  --ion-color-medium-rgb: 100, 116, 139;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #475569;
+  --ion-color-medium-tint: #94a3b8;
+
+  /** Light: Clean White / Ice Blue **/
+  --ion-color-light: #f1f5f9;
+  --ion-color-light-rgb: 241, 245, 249;
+  --ion-color-light-contrast: #0f172a;
+  --ion-color-light-contrast-rgb: 15, 23, 42;
+  --ion-color-light-shade: #cbd5e1;
+  --ion-color-light-tint: #f8fafc;
+
+  /** System-wide background overrides **/
+  --ion-background-color: #f8fafc;
+  --ion-background-color-rgb: 248, 250, 252;
+
+  --ion-text-color: #0f172a;
+  --ion-text-color-rgb: 15, 23, 42;
+
+  --ion-border-color: #e2e8f0;
+
+  /** Card/Item variables **/
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+}
+
+/* Custom classes for fonts and modern aesthetics */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Roboto', sans-serif;
+}
+
+/* Glassmorphism utility */
+.glass-header {
+  --background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.price-tag {
+  color: var(--ion-color-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.badge-condition {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+/** Dark Mode variables for system preferences **/
+@media (prefers-color-scheme: dark) {
+  body.dark, :root {
+    --ion-background-color: #0f172a;
+    --ion-background-color-rgb: 15, 23, 42;
+
+    --ion-text-color: #f8fafc;
+    --ion-text-color-rgb: 248, 250, 252;
+
+    --ion-border-color: #1e293b;
+
+    --ion-item-background: #1e293b;
+    --ion-card-background: #1e293b;
+
+    --ion-color-step-50: #1e293b;
+    --ion-color-step-100: #243048;
+    --ion-color-step-150: #293856;
+    --ion-color-step-200: #2f4063;
+    --ion-color-step-250: #344870;
+    --ion-color-step-300: #3a4f7e;
+    --ion-color-step-350: #3f578b;
+    --ion-color-step-400: #455e99;
+    --ion-color-step-450: #4a66a6;
+    --ion-color-step-500: #506db4;
+    --ion-color-step-550: #5776bf;
+    --ion-color-step-600: #5f80cb;
+    --ion-color-step-650: #6a8cd6;
+    --ion-color-step-700: #7899e0;
+    --ion-color-step-750: #88a7eb;
+    --ion-color-step-800: #9cb6f3;
+    --ion-color-step-850: #b2c7f9;
+    --ion-color-step-900: #cbd8fc;
+    --ion-color-step-950: #e5ebfe;
+
+    --ion-color-light: #1e293b;
+    --ion-color-light-rgb: 30, 41, 59;
+    --ion-color-light-contrast: #f8fafc;
+    --ion-color-light-contrast-rgb: 248, 250, 252;
+    --ion-color-light-shade: #0f172a;
+    --ion-color-light-tint: #334155;
+  }
+
+  .glass-header {
+    --background: rgba(15, 23, 42, 0.85);
+    border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+  }
+}

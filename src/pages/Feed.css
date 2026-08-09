@@ -1,0 +1,126 @@
+.feed-header-content {
+  padding: 10px 16px 4px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--ion-color-dark);
+  letter-spacing: -0.5px;
+}
+
+.logo-accent {
+  color: var(--ion-color-primary);
+}
+
+.search-toolbar {
+  --background: transparent;
+  padding: 0 8px 8px 8px;
+}
+
+.custom-searchbar {
+  --background: #f1f5f9;
+  --border-radius: 10px;
+  --placeholder-color: #94a3b8;
+  --placeholder-opacity: 0.8;
+  --icon-color: #64748b;
+  padding: 0 8px;
+}
+
+.categories-scroller {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 12px 16px;
+  gap: 8px;
+  scrollbar-width: none;
+}
+
+.categories-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ion-item-background);
+  border: 1px solid var(--ion-border-color);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.category-chip.active {
+  background: var(--ion-color-primary);
+  border-color: var(--ion-color-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(26, 86, 219, 0.25);
+}
+
+.category-chip .cat-icon {
+  font-size: 0.95rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+}
+
+.products-grid {
+  padding: 4px 12px 80px 12px;
+}
+
+.grid-col {
+  padding: 6px !important;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.no-results-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.no-results h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--ion-text-color);
+}
+
+.no-results p {
+  font-size: 0.88rem;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.fab-add {
+  margin-bottom: 16px;
+  margin-right: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custom-searchbar {
+    --background: #1e293b;
+    --placeholder-color: #64748b;
+    --icon-color: #94a3b8;
+  }
+}
