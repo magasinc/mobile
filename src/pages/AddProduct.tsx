@@ -20,6 +20,7 @@ import { imageOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { productService } from '../services/productService';
 import { ProductCondition } from '../models/product';
+import { ProductValidationErrors, validatePublishProduct } from '../utils/productValidation';
 import './AddProduct.css';
 
 const AddProduct: React.FC = () => {
@@ -36,6 +37,7 @@ const AddProduct: React.FC = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<ProductValidationErrors>({});
 
   // Mapeo inteligente de fotos mock de alta calidad según categoría
   const getAutoImage = (slug: string) => {
@@ -58,10 +60,22 @@ const AddProduct: React.FC = () => {
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !price || !brand || !size || !description) {
+    const validationErrors = validatePublishProduct({
+      title,
+      price,
+      originalPrice,
+      brand,
+      size,
+      description,
+      imageUrl
+    });
+
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
       presentToast({
-        message: 'Por favor, completa todos los campos requeridos.',
-        duration: 2000,
+        message: 'Revisa los campos antes de publicar.',
+        duration: 2200,
         color: 'warning'
       });
       return;
@@ -71,21 +85,21 @@ const AddProduct: React.FC = () => {
 
     try {
       const selectedImage = imageUrl.trim() || getAutoImage(categorySlug);
-      
+
       await productService.createProduct({
-        title,
+        title: title.trim(),
         price: Number(price),
         originalPrice: originalPrice ? Number(originalPrice) : undefined,
-        brand,
-        size,
+        brand: brand.trim(),
+        size: size.trim(),
         categorySlug,
         condition,
         imageUrls: [selectedImage],
-        description
+        description: description.trim()
       });
 
       presentToast({
-        message: '🎉 ¡Prenda publicada con éxito!',
+        message: '🎉 ¡Artículo publicado con éxito!',
         duration: 2000,
         color: 'success'
       });
@@ -93,7 +107,7 @@ const AddProduct: React.FC = () => {
       history.replace('/feed');
     } catch (error) {
       presentToast({
-        message: 'Hubo un error al publicar la prenda.',
+        message: 'Hubo un error al publicar el artículo.',
         duration: 2000,
         color: 'danger'
       });
@@ -110,14 +124,14 @@ const AddProduct: React.FC = () => {
             <IonBackButton defaultHref="/feed" text="Volver" />
           </IonButtons>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, textAlign: 'center', flexGrow: 1, paddingRight: '48px' }}>
-            Publicar Prenda
+            Publicar artículo
           </h2>
         </IonToolbar>
       </IonHeader>
 
       <IonContent>
         <form onSubmit={handlePublish} className="add-form">
-          
+
           {/* Vista previa de imagen */}
           <div className="image-preview-box">
             {imageUrl ? (
@@ -125,8 +139,8 @@ const AddProduct: React.FC = () => {
             ) : (
               <div className="image-placeholder-content">
                 <IonIcon icon={imageOutline} className="image-placeholder-icon" />
-                <span className="image-placeholder-text">Subir foto de la prenda</span>
-                <span style={{ fontSize: '0.72rem' }}>(Se asignará una auto-foto de demostración)</span>
+                <span className="image-placeholder-text">Subir foto del artículo</span>
+                <span style={{ fontSize: '0.72rem' }}>(Se asignará una foto de demostración)</span>
               </div>
             )}
           </div>
@@ -135,21 +149,31 @@ const AddProduct: React.FC = () => {
           <IonItem className="custom-item" lines="none">
             <IonLabel position="stacked">Enlace de imagen (Opcional)</IonLabel>
             <IonInput
-              placeholder="https://ejemplo.com/prenda.jpg"
+              placeholder="https://ejemplo.com/articulo.jpg"
               value={imageUrl}
-              onIonInput={(e) => setImageUrl(e.detail.value || '')}
+              onIonInput={(e) => {
+                const nextValue = e.detail.value || '';
+                setImageUrl(nextValue);
+                setErrors((current) => ({ ...current, imageUrl: undefined }));
+              }}
             />
+            {errors.imageUrl && <div className="field-error-message">{errors.imageUrl}</div>}
           </IonItem>
 
-          {/* Título de la prenda */}
+          {/* Título del artículo */}
           <IonItem className="custom-item" lines="none">
             <IonLabel position="stacked">Título *</IonLabel>
             <IonInput
               placeholder="Ej. Buzo Nike Vintage Oversized"
               value={title}
-              onIonInput={(e) => setTitle(e.detail.value || '')}
+              onIonInput={(e) => {
+                const nextValue = e.detail.value || '';
+                setTitle(nextValue);
+                setErrors((current) => ({ ...current, title: undefined }));
+              }}
               required
             />
+            {errors.title && <div className="field-error-message">{errors.title}</div>}
           </IonItem>
 
           {/* Marca y Talle */}
@@ -159,18 +183,28 @@ const AddProduct: React.FC = () => {
               <IonInput
                 placeholder="Ej. Nike"
                 value={brand}
-                onIonInput={(e) => setBrand(e.detail.value || '')}
+                onIonInput={(e) => {
+                  const nextValue = e.detail.value || '';
+                  setBrand(nextValue);
+                  setErrors((current) => ({ ...current, brand: undefined }));
+                }}
                 required
               />
+              {errors.brand && <div className="field-error-message">{errors.brand}</div>}
             </IonItem>
             <IonItem className="custom-item" lines="none" style={{ flex: 1 }}>
-              <IonLabel position="stacked">Talle *</IonLabel>
+              <IonLabel position="stacked">Talla *</IonLabel>
               <IonInput
-                placeholder="Ej. L / 41 AR"
+                placeholder="Ej. L / M"
                 value={size}
-                onIonInput={(e) => setSize(e.detail.value || '')}
+                onIonInput={(e) => {
+                  const nextValue = e.detail.value || '';
+                  setSize(nextValue);
+                  setErrors((current) => ({ ...current, size: undefined }));
+                }}
                 required
               />
+              {errors.size && <div className="field-error-message">{errors.size}</div>}
             </IonItem>
           </div>
 
@@ -183,8 +217,8 @@ const AddProduct: React.FC = () => {
                 interface="popover"
                 onIonChange={(e) => setCategorySlug(e.detail.value)}
               >
-                <IonSelectOption value="shoes">Zapatillas</IonSelectOption>
-                <IonSelectOption value="jackets">Camperas</IonSelectOption>
+                  <IonSelectOption value="shoes">Zapatillas</IonSelectOption>
+                <IonSelectOption value="jackets">Buzos</IonSelectOption>
                 <IonSelectOption value="pants">Pantalones</IonSelectOption>
                 <IonSelectOption value="dresses">Vestidos</IonSelectOption>
                 <IonSelectOption value="accessories">Accesorios</IonSelectOption>
@@ -208,14 +242,19 @@ const AddProduct: React.FC = () => {
           {/* Precios */}
           <div style={{ display: 'flex', gap: '12px' }}>
             <IonItem className="custom-item" lines="none" style={{ flex: 1 }}>
-              <IonLabel position="stacked">Precio ($ ARS) *</IonLabel>
+              <IonLabel position="stacked">Precio (USD) *</IonLabel>
               <IonInput
                 type="number"
                 placeholder="0"
                 value={price ?? ''}
-                onIonInput={(e) => setPrice(e.detail.value ? Number(e.detail.value) : null)}
+                onIonInput={(e) => {
+                  const nextValue = e.detail.value ? Number(e.detail.value) : null;
+                  setPrice(nextValue);
+                  setErrors((current) => ({ ...current, price: undefined }));
+                }}
                 required
               />
+              {errors.price && <div className="field-error-message">{errors.price}</div>}
             </IonItem>
             <IonItem className="custom-item" lines="none" style={{ flex: 1 }}>
               <IonLabel position="stacked">Precio Original (Opcional)</IonLabel>
@@ -223,8 +262,13 @@ const AddProduct: React.FC = () => {
                 type="number"
                 placeholder="0"
                 value={originalPrice ?? ''}
-                onIonInput={(e) => setOriginalPrice(e.detail.value ? Number(e.detail.value) : null)}
+                onIonInput={(e) => {
+                  const nextValue = e.detail.value ? Number(e.detail.value) : null;
+                  setOriginalPrice(nextValue);
+                  setErrors((current) => ({ ...current, originalPrice: undefined }));
+                }}
               />
+              {errors.originalPrice && <div className="field-error-message">{errors.originalPrice}</div>}
             </IonItem>
           </div>
 
@@ -232,12 +276,17 @@ const AddProduct: React.FC = () => {
           <IonItem className="custom-item" lines="none">
             <IonLabel position="stacked">Descripción detallada *</IonLabel>
             <IonTextarea
-              placeholder="Describí los detalles, si tiene marcas de uso, lavado, etc."
+              placeholder="Describe los detalles, colores, estado y recomendaciones."
               rows={4}
               value={description}
-              onIonInput={(e) => setDescription(e.detail.value || '')}
+              onIonInput={(e) => {
+                const nextValue = e.detail.value || '';
+                setDescription(nextValue);
+                setErrors((current) => ({ ...current, description: undefined }));
+              }}
               required
             />
+            {errors.description && <div className="field-error-message">{errors.description}</div>}
           </IonItem>
 
           {/* Botón de envío */}

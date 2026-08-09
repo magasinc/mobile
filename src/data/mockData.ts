@@ -4,7 +4,7 @@ import { User, ChatItem, Message } from '../models/user';
 export const MOCK_CATEGORIES: Category[] = [
   { id: '1', name: 'Todos', icon: 'grid-outline', slug: 'all' },
   { id: '2', name: 'Zapatillas', icon: 'footsteps-outline', slug: 'shoes' },
-  { id: '3', name: 'Camperas', icon: 'snow-outline', slug: 'jackets' },
+  { id: '3', name: 'Buzos', icon: 'snow-outline', slug: 'jackets' },
   { id: '4', name: 'Pantalones', icon: 'shirt-outline', slug: 'pants' }, // Usamos shirt-outline como fallback visual
   { id: '5', name: 'Vestidos', icon: 'female-outline', slug: 'dresses' },
   { id: '6', name: 'Accesorios', icon: 'watch-outline', slug: 'accessories' }
@@ -17,7 +17,7 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop',
     rating: 4.8,
     memberSince: 'Marzo 2024',
-    location: 'Palermo, CABA',
+    location: 'Quito, Pichincha',
     listingsCount: 3
   },
   {
@@ -26,7 +26,7 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop',
     rating: 4.9,
     memberSince: 'Septiembre 2023',
-    location: 'Belgrano, CABA',
+    location: 'Quito, Pichincha',
     listingsCount: 12
   },
   {
@@ -35,7 +35,7 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop',
     rating: 4.6,
     memberSince: 'Enero 2024',
-    location: 'San Isidro, GBA',
+    location: 'Guayaquil, Guayas',
     listingsCount: 5
   },
   {
@@ -44,7 +44,7 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop',
     rating: 4.7,
     memberSince: 'Noviembre 2023',
-    location: 'Córdoba Capital',
+    location: 'Cuenca, Azuay',
     listingsCount: 8
   }
 ];
@@ -67,12 +67,12 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop',
     createdAt: new Date(Date.now() - 4 * 3600000).toISOString(), // hace 4 horas
     status: 'active',
-    location: 'Belgrano, CABA'
+    location: 'Quito, Pichincha'
   },
   {
     id: 'prod_2',
-    title: 'Campera de Jean Levi\'s Vintage Trucker',
-    description: 'Campera de jean clásico color azul gastado. Corte regular, botones de metal grabados de la marca. Muy resistente y en muy buen estado general.',
+    title: 'Buzo Levi\'s Vintage Oversized',
+    description: 'Buzo de algodón con estilo clásico, color azul grisáceo y corte amplio. Tiene buen peso y una construcción sólida para uso diario.',
     price: 85000,
     originalPrice: 140000,
     size: 'L',
@@ -86,7 +86,7 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop',
     createdAt: new Date(Date.now() - 24 * 3600000).toISOString(), // hace 1 día
     status: 'active',
-    location: 'San Isidro, GBA'
+    location: 'Guayaquil, Guayas'
   },
   {
     id: 'prod_3',
@@ -105,7 +105,7 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop',
     createdAt: new Date(Date.now() - 48 * 3600000).toISOString(), // hace 2 días
     status: 'active',
-    location: 'Córdoba Capital'
+    location: 'Cuenca, Azuay'
   },
   {
     id: 'prod_4',
@@ -124,7 +124,7 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop',
     createdAt: new Date(Date.now() - 72 * 3600000).toISOString(), // hace 3 días
     status: 'active',
-    location: 'Belgrano, CABA'
+    location: 'Quito, Pichincha'
   },
   {
     id: 'prod_5',
@@ -143,7 +143,7 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop',
     createdAt: new Date(Date.now() - 96 * 3600000).toISOString(), // hace 4 días
     status: 'active',
-    location: 'San Isidro, GBA'
+    location: 'Guayaquil, Guayas'
   },
   {
     id: 'prod_6',
@@ -162,7 +162,7 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop',
     createdAt: new Date(Date.now() - 120 * 3600000).toISOString(), // hace 5 días
     status: 'active',
-    location: 'Córdoba Capital'
+    location: 'Cuenca, Azuay'
   },
   // Artículos propios del usuario actual
   {
@@ -181,12 +181,12 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerRating: 4.8,
     createdAt: new Date(Date.now() - 15 * 3600000).toISOString(),
     status: 'active',
-    location: 'Palermo, CABA'
+    location: 'Quito, Pichincha'
   },
   {
     id: 'prod_my_2',
-    title: 'Campera Bomber de Cuero Negra',
-    description: 'Campera bomber imitación cuero de buena calidad. Interior forrado. Usada pero en excelente conservación sin raspones.',
+    title: 'Buzo Bomber Negro Premium',
+    description: 'Buzo bomber de tejido premium con interior forrado. Tiene un uso moderado y se conserva en excelente estado.',
     price: 48000,
     originalPrice: 85000,
     size: 'M',
@@ -199,7 +199,7 @@ export const MOCK_PRODUCTS: Product[] = [
     sellerRating: 4.8,
     createdAt: new Date(Date.now() - 180 * 3600000).toISOString(),
     status: 'sold',
-    location: 'Palermo, CABA'
+    location: 'Quito, Pichincha'
   }
 ];
 
@@ -207,7 +207,7 @@ export const MOCK_CHATS: ChatItem[] = [
   {
     id: 'chat_1',
     otherUser: MOCK_USERS[1], // Lucía Gómez
-    lastMessage: 'Hola! Sí, todavía las tengo. Hago envíos por Correo Argentino.',
+    lastMessage: 'Hola! Sí, todavía las tengo. Hago envíos por correo certificado.',
     lastMessageTime: new Date(Date.now() - 20 * 60000).toISOString(), // hace 20 mins
     unread: true,
     productId: 'prod_1',
@@ -221,7 +221,7 @@ export const MOCK_CHATS: ChatItem[] = [
     lastMessageTime: new Date(Date.now() - 2 * 3600000).toISOString(), // hace 2 horas
     unread: false,
     productId: 'prod_2',
-    productTitle: 'Campera de Jean Levi\'s Vintage Trucker',
+    productTitle: 'Buzo Levi\'s Vintage Oversized',
     productImage: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=150&auto=format&fit=crop'
   }
 ];
@@ -239,7 +239,7 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       id: 'm1_2',
       chatId: 'chat_1',
       senderId: 'user_lucia',
-      text: 'Hola! Sí, todavía las tengo. Hago envíos por Correo Argentino.',
+      text: 'Hola! Sí, todavía las tengo. Hago envíos por correo certificado.',
       timestamp: new Date(Date.now() - 20 * 60000).toISOString()
     }
   ],
@@ -248,14 +248,14 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       id: 'm2_1',
       chatId: 'chat_2',
       senderId: 'user_me',
-      text: 'Buenas! Me interesa mucho la campera Levi\'s. ¿Te sirve encontrarnos en la estación de tren de San Isidro para retirar?',
+      text: 'Buenas! Me interesa mucho el buzo Levi\'s. ¿Te sirve encontrarnos en la estación central de Quito para retirar?',
       timestamp: new Date(Date.now() - 3 * 3600000).toISOString()
     },
     {
       id: 'm2_2',
       chatId: 'chat_2',
       senderId: 'user_mateo',
-      text: 'Hola qué tal. Sí, me queda perfecto retirar por la estación de San Isidro.',
+      text: 'Hola qué tal. Sí, me queda perfecto retirar por la estación central de Quito.',
       timestamp: new Date(Date.now() - 2.5 * 3600000).toISOString()
     },
     {

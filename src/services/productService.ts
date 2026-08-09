@@ -1,14 +1,45 @@
 import { Product, Category } from '../models/product';
 import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '../data/mockData';
 
+const STORAGE_KEY = 'thread-blue-products';
+
+const readPersistedProducts = (): Product[] => {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return [...MOCK_PRODUCTS];
+  }
+
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_PRODUCTS));
+    return [...MOCK_PRODUCTS];
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Product[];
+    return Array.isArray(parsed) ? parsed : [...MOCK_PRODUCTS];
+  } catch (e) {
+    console.error('No se pudieron leer los productos persistidos.', e);
+    return [...MOCK_PRODUCTS];
+  }
+};
+
+const saveProducts = (items: Product[]) => {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return;
+  }
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+};
+
 // Estado en memoria para simular una base de datos interactiva en la sesión
-let products: Product[] = [...MOCK_PRODUCTS];
+let products: Product[] = readPersistedProducts();
 
 export const productService = {
   getProducts: async (filters?: { 
     query?: string; 
     categorySlug?: string; 
     sellerId?: string; 
+    buyerId?: string;
     status?: 'active' | 'reserved' | 'sold' 
   }): Promise<Product[]> => {
     // Simular retraso de red breve para fidelidad de UX
@@ -31,6 +62,9 @@ export const productService = {
       if (filters.sellerId) {
         result = result.filter(p => p.sellerId === filters.sellerId);
       }
+      if (filters.buyerId) {
+        result = result.filter(p => p.buyerId === filters.buyerId);
+      }
       if (filters.status) {
         result = result.filter(p => p.status === filters.status);
       }
@@ -48,7 +82,7 @@ export const productService = {
     return MOCK_CATEGORIES;
   },
 
-  createProduct: async (productData: Omit<Product, 'id' | 'createdAt' | 'status' | 'sellerId' | 'sellerName' | 'sellerRating' | 'sellerAvatar' | 'location'>): Promise<Product> => {
+  createProduct: async (productData: Omit<Product, 'id' | 'createdAt' | 'status' | 'sellerId' | 'sellerName' | 'sellerRating' | 'sellerAvatar' | 'location' | 'buyerId' | 'soldAt'>): Promise<Product> => {
     await new Promise(resolve => setTimeout(resolve, 400));
     
     const newProduct: Product = {
@@ -60,11 +94,37 @@ export const productService = {
       sellerName: 'Tu Perfil',
       sellerRating: 4.8,
       sellerAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop',
-      location: 'Palermo, CABA'
+      location: 'Quito, Pichincha'
     };
     
     // Lo agregamos al principio de la lista en memoria
     products = [newProduct, ...products];
+    saveProducts(products);
     return newProduct;
+  },
+
+  purchaseProduct: async (productId: string, buyerId: string): Promise<Product> => {
+    await new Promise(resolve => setTimeout(resolve, 250));
+
+    const target = products.find(item => item.id === productId);
+    if (!target) {
+      throw new Error('Publicación no encontrada.');
+    }
+
+    if (target.sellerId === buyerId) {
+      throw new Error('No puedes comprar tu propio artículo.');
+    }
+
+    if (target.status === 'sold') {
+      throw new Error('Este artículo ya fue vendido.');
+    }
+
+    target.status = 'sold';
+    target.buyerId = buyerId;
+    target.soldAt = new Date().toISOString();
+
+    saveProducts(products);
+
+    return target;
   }
 };

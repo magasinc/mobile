@@ -26,4 +26,6 @@ export interface Product {
   createdAt: string;
   status: ProductStatus;
   location?: string;
+  buyerId?: string;
+  soldAt?: string;
 }

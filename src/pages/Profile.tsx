@@ -33,29 +33,39 @@ const Profile: React.FC = () => {
   const loadProfileData = useCallback(async () => {
     setLoading(true);
     try {
+      const selectedSegment = (() => {
+        if (typeof window === 'undefined' || !window.localStorage) {
+          return activeSegment;
+        }
+
+        const stored = window.localStorage.getItem('thread-blue-profile-segment') as 'active' | 'sold' | 'bought' | null;
+        if (stored === 'active' || stored === 'sold' || stored === 'bought') {
+          return stored;
+        }
+
+        return activeSegment;
+      })();
+
       // 1. Obtener todas las publicaciones del usuario
       const allUserProducts = await productService.getProducts({ sellerId: 'user_me' });
-      
+
       const activeListings = allUserProducts.filter(p => p.status === 'active');
       const soldListings = allUserProducts.filter(p => p.status === 'sold');
-      
-      // Simular algunas compras hechas por el usuario
-      const boughtCount = 1; 
+      const boughtProducts = await productService.getProducts({ buyerId: 'user_me', status: 'sold' });
 
       setCounts({
         active: activeListings.length,
         sold: soldListings.length,
-        bought: boughtCount
+        bought: boughtProducts.length
       });
 
       // 2. Cargar según el segmento activo
-      if (activeSegment === 'active') {
+      if (selectedSegment === 'active') {
         setProducts(activeListings);
-      } else if (activeSegment === 'sold') {
+      } else if (selectedSegment === 'sold') {
         setProducts(soldListings);
       } else {
-        // Mock de compras
-        setProducts([]);
+        setProducts(boughtProducts);
       }
     } catch (e) {
       console.error(e);
@@ -65,12 +75,23 @@ const Profile: React.FC = () => {
   }, [activeSegment]);
 
   useIonViewWillEnter(() => {
+    const stored = typeof window !== 'undefined' && window.localStorage
+      ? (window.localStorage.getItem('thread-blue-profile-segment') as 'active' | 'sold' | 'bought' | null)
+      : null;
+
+    if (stored === 'active' || stored === 'sold' || stored === 'bought') {
+      setActiveSegment(stored);
+    }
+
     loadProfileData();
   });
 
   const handleSegmentChange = (e: CustomEvent) => {
     const val = e.detail.value as 'active' | 'sold' | 'bought';
     setActiveSegment(val);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('thread-blue-profile-segment', val);
+    }
   };
 
   return (
@@ -150,31 +171,23 @@ const Profile: React.FC = () => {
             <IonSpinner name="crescent" color="primary" />
           </div>
         ) : activeSegment === 'bought' ? (
-          /* Muestra de Mis Compras */
-          <IonGrid className="products-grid ion-no-padding">
-            <IonRow>
-              <IonCol size="6" className="ion-no-padding grid-col">
-                {/* Prenda comprada simulada */}
-                <div className="product-card" style={{ opacity: 0.95 }}>
-                  <div style={{ position: 'relative', width: '100%', paddingTop: '100%', overflow: 'hidden' }}>
-                    <img
-                      src="https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?w=500"
-                      alt="Gorro comprada"
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <span className="badge-condition condition-new" style={{ position: 'absolute', bottom: '8px', left: '8px', background: '#ffffff', fontSize: '0.65rem', padding: '3px 6px', borderRadius: '6px', fontWeight: 700 }}>
-                      COMPRADO
-                    </span>
-                  </div>
-                  <div style={{ padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--ion-color-medium)', fontWeight: 600 }}>CARHARTT</span>
-                    <h3 className="title" style={{ height: 'auto', marginBottom: '4px' }}>Gorro Beanie Carhartt WIP</h3>
-                    <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--ion-color-success)' }}>$24.000</span>
-                  </div>
-                </div>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+          products.length > 0 ? (
+            <IonGrid className="products-grid ion-no-padding">
+              <IonRow>
+                {products.map((prod) => (
+                  <IonCol size="6" key={prod.id} className="ion-no-padding grid-col">
+                    <ProductCard product={prod} />
+                  </IonCol>
+                ))}
+              </IonRow>
+            </IonGrid>
+          ) : (
+            <div className="no-results" style={{ marginTop: '50px' }}>
+              <div className="no-results-icon">🛍️</div>
+              <h3>No has comprado artículos todavía</h3>
+              <p>Cuando completes una compra verás tus artículos adquiridos aquí.</p>
+            </div>
+          )
         ) : products.length > 0 ? (
           <IonGrid className="products-grid ion-no-padding">
             <IonRow>

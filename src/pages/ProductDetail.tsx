@@ -15,6 +15,7 @@ import { star, pinOutline } from 'ionicons/icons';
 import { useParams, useHistory } from 'react-router-dom';
 import { productService } from '../services/productService';
 import { userService } from '../services/userService';
+import { cartService } from '../services/cartService';
 import { Product } from '../models/product';
 import { formatCurrency, formatCondition, getConditionColor } from '../utils/format';
 import './ProductDetail.css';
@@ -70,7 +71,39 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  const handleBuy = () => {
+  const handleAddToCart = async () => {
+    if (!product) return;
+
+    try {
+      await cartService.addItem({
+        productId: product.id,
+        title: product.title,
+        imageUrl: product.imageUrls[0],
+        price: product.price,
+        quantity: 1,
+        sellerId: product.sellerId,
+        sellerName: product.sellerName,
+        size: product.size,
+        addedAt: new Date().toISOString()
+      });
+
+      presentToast({
+        message: 'Artículo agregado al carrito.',
+        duration: 1800,
+        color: 'primary'
+      });
+
+      history.push('/checkout');
+    } catch (e) {
+      presentToast({
+        message: 'No se pudo agregar al carrito.',
+        duration: 2000,
+        color: 'danger'
+      });
+    }
+  };
+
+  const handleBuy = async () => {
     if (!product) return;
     if (product.sellerId === 'user_me') {
       presentToast({
@@ -80,12 +113,27 @@ const ProductDetail: React.FC = () => {
       });
       return;
     }
-    
-    presentToast({
-      message: '🎉 ¡Compra simulada con éxito! Se ha coordinado con el vendedor.',
-      duration: 3000,
-      color: 'success'
-    });
+
+    try {
+      const updatedProduct = await productService.purchaseProduct(product.id, 'user_me');
+      setProduct(updatedProduct);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('thread-blue-profile-segment', 'bought');
+      }
+      presentToast({
+        message: '🎉 ¡Compra simulada con éxito! Se ha coordinado con el vendedor.',
+        duration: 3000,
+        color: 'success'
+      });
+
+      history.replace('/profile');
+    } catch (error: any) {
+      presentToast({
+        message: error?.message || 'No se pudo completar la compra.',
+        duration: 2500,
+        color: 'danger'
+      });
+    }
   };
 
   if (loading) {
@@ -202,6 +250,9 @@ const ProductDetail: React.FC = () => {
       <div className="bottom-actions-container">
         <IonButton fill="outline" className="btn-chat" onClick={handleChat}>
           Preguntar
+        </IonButton>
+        <IonButton fill="outline" className="btn-cart" onClick={handleAddToCart}>
+          Agregar al carrito
         </IonButton>
         <IonButton className="btn-buy" onClick={handleBuy}>
           Comprar Ahora

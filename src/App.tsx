@@ -10,12 +10,13 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { shirtOutline, chatbubblesOutline, personOutline } from 'ionicons/icons';
+import { shirtOutline, chatbubblesOutline, personOutline, cartOutline } from 'ionicons/icons';
 import Feed from './pages/Feed';
 import Inbox from './pages/Inbox';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
 import AddProduct from './pages/AddProduct';
+import Checkout from './pages/Checkout';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -69,6 +70,12 @@ const App: React.FC = () => (
           <Route exact path="/add-product">
             <AddProduct />
           </Route>
+          <Route exact path="/checkout">
+            <Checkout />
+          </Route>
+          <Route exact path="/cart">
+            <Checkout />
+          </Route>
           <Route exact path="/">
             <Redirect to="/feed" />
           </Route>
@@ -82,6 +89,10 @@ const App: React.FC = () => (
           <IonTabButton tab="inbox" href="/inbox">
             <IonIcon aria-hidden="true" icon={chatbubblesOutline} />
             <IonLabel>Mensajes</IonLabel>
+          </IonTabButton>
+          <IonTabButton tab="checkout" href="/checkout">
+            <IonIcon aria-hidden="true" icon={cartOutline} />
+            <IonLabel>Carrito</IonLabel>
           </IonTabButton>
           <IonTabButton tab="profile" href="/profile">
             <IonIcon aria-hidden="true" icon={personOutline} />

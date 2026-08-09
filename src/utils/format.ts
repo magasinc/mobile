@@ -1,9 +1,9 @@
 import { ProductCondition } from '../models/product';
 
 export const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('es-AR', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'ARS',
+    currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);

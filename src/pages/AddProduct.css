@@ -63,3 +63,11 @@
   margin-top: 24px;
   height: 48px;
 }
+
+.field-error-message {
+  color: var(--ion-color-danger);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  margin-top: 6px;
+  padding-left: 2px;
+}

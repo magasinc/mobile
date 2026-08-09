@@ -95,7 +95,7 @@ export const userService = {
       avatar: product.sellerAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
       rating: product.sellerRating,
       memberSince: 'Agosto 2026',
-      location: product.location || 'Argentina',
+      location: product.location || 'Ecuador',
       listingsCount: 1
     };
 
