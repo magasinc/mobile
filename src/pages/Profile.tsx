@@ -158,7 +158,13 @@ const Profile: React.FC = () => {
             alt={currentUser.name}
             className="profile-avatar"
           />
-          <h2 className="profile-name">Federico Rossi</h2>
+          <div className="profile-name-row">
+            <h2 className="profile-name">{currentUser.name}</h2>
+            <span className="verified-badge" title="Usuario verificado">
+              <IonIcon icon={checkmarkCircleOutline} />
+              <span className="verified-text">Verificado</span>
+            </span>
+          </div>
           
           <div className="profile-meta-row">
             <div className="profile-location-info">

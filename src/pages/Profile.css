@@ -25,6 +25,33 @@
   margin: 0 0 6px 0;
 }
 
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--ion-color-success);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(16,185,129,0.18);
+}
+
+.verified-badge ion-icon {
+  font-size: 1rem;
+}
+
+.verified-text {
+  text-transform: none;
+}
+
 .profile-meta-row {
   display: flex;
   align-items: center;

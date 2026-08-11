@@ -5,9 +5,10 @@ export const MOCK_CATEGORIES: Category[] = [
   { id: '1', name: 'Todos', icon: 'grid-outline', slug: 'all' },
   { id: '2', name: 'Zapatillas', icon: 'footsteps-outline', slug: 'shoes' },
   { id: '3', name: 'Buzos', icon: 'snow-outline', slug: 'jackets' },
-  { id: '4', name: 'Pantalones', icon: 'shirt-outline', slug: 'pants' }, // Usamos shirt-outline como fallback visual
+  { id: '4', name: 'Pantalones', icon: 'body-outline', slug: 'pants' }, // Usamos shirt-outline como fallback visual
   { id: '5', name: 'Vestidos', icon: 'female-outline', slug: 'dresses' },
-  { id: '6', name: 'Accesorios', icon: 'watch-outline', slug: 'accessories' }
+  { id: '6', name: 'Accesorios', icon: 'watch-outline', slug: 'accessories' },
+  { id: '7', name: 'Bolsos', icon: 'bag-handle-outline', slug: 'bags' }
 ];
 
 export const MOCK_USERS: User[] = [

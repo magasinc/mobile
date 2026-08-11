@@ -33,6 +33,7 @@ const Checkout: React.FC = () => {
   const [shippingMethod, setShippingMethod] = useState<'standard' | 'express' | 'pickup'>('standard');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal' | 'cash'>('card');
   const [loading, setLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   // Datos de tarjeta de crédito simulada
   const [cardNumber, setCardNumber] = useState('');
@@ -135,7 +136,12 @@ const Checkout: React.FC = () => {
         color: 'success'
       });
 
-      history.replace('/profile');
+      // Mostrar confetti (emojis) por 3 segundos antes de redirigir
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+        history.replace('/profile');
+      }, 3000);
     } catch (e: any) {
       presentToast({ message: e?.message || 'No se pudo confirmar la compra.', duration: 2500, color: 'danger' });
     } finally {
@@ -154,6 +160,27 @@ const Checkout: React.FC = () => {
 
   return (
     <IonPage>
+      {showConfetti && (
+        <div className="confetti-overlay" aria-hidden>
+          {[...Array(16)].map((_, i) => {
+            const left = Math.random() * 100;
+            const top = 10 + Math.random() * 70;
+            const size = 18 + Math.random() * 36;
+            const delay = Math.random() * 0.6;
+            const emojis = ['🥳', '🎉', '🎊'];
+            const emoji = emojis[i % emojis.length];
+            return (
+              <span
+                key={i}
+                className="confetti-emoji"
+                style={{ left: `${left}%`, top: `${top}%`, fontSize: `${size}px`, animationDelay: `${delay}s` }}
+              >
+                {emoji}
+              </span>
+            );
+          })}
+        </div>
+      )}
       <IonHeader className="ion-no-border">
         <IonToolbar className="glass-header">
           <IonButtons slot="start">

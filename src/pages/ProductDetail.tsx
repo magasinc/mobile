@@ -10,7 +10,8 @@ import {
   IonButton,
   IonSpinner,
   useIonToast,
-  useIonViewWillEnter
+  useIonViewWillEnter,
+  IonModal
 } from '@ionic/react';
 import { star, pinOutline, heart, heartOutline } from 'ionicons/icons';
 import { useParams, useHistory } from 'react-router-dom';
@@ -28,6 +29,132 @@ const ProductDetail: React.FC = () => {
   const history = useHistory();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
+  const [showImageModal, setShowImageModal] = useState<boolean>(false);
+  const [zoomScale, setZoomScale] = useState<number>(1);
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 4;
+
+  const changeZoom = (delta: number) => {
+    setZoomScale((s) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, +(s + delta).toFixed(2))));
+  };
+
+  const resetZoom = () => setZoomScale(1);
+  // Panning (drag) state and refs
+  const wrapperRef = React.useRef<HTMLDivElement | null>(null);
+  const imageRef = React.useRef<HTMLImageElement | null>(null);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const panRef = React.useRef({ x: 0, y: 0 });
+  const draggingRef = React.useRef(false);
+  const startRef = React.useRef({ x: 0, y: 0 });
+  const lastMoveRef = React.useRef({ x: 0, y: 0, t: 0 });
+  const velocityRef = React.useRef({ x: 0, y: 0 });
+  const rafRef = React.useRef<number | null>(null);
+
+  const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (zoomScale <= 1) return;
+    const target = e.currentTarget as Element;
+    try { target.setPointerCapture(e.pointerId); } catch {}
+    draggingRef.current = true;
+    startRef.current = { x: e.clientX, y: e.clientY };
+    panRef.current = { x: pan.x, y: pan.y };
+    lastMoveRef.current = { x: e.clientX, y: e.clientY, t: performance.now() };
+    velocityRef.current = { x: 0, y: 0 };
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - startRef.current.x;
+    const dy = e.clientY - startRef.current.y;
+    let newX = panRef.current.x + dx;
+    let newY = panRef.current.y + dy;
+
+    const wr = wrapperRef.current;
+    const wrapperW = wr?.clientWidth || 0;
+    const wrapperH = wr?.clientHeight || 0;
+
+    // Allow panning proportional to zoom level; add small slack
+    const maxX = Math.max(0, ((zoomScale - 1) * wrapperW) / 2 + 20);
+    const maxY = Math.max(0, ((zoomScale - 1) * wrapperH) / 2 + 20);
+
+    newX = clamp(newX, -maxX, maxX);
+    newY = clamp(newY, -maxY, maxY);
+
+    setPan({ x: newX, y: newY });
+    // compute instantaneous velocity (px per second)
+    const now = performance.now();
+    const last = lastMoveRef.current;
+    const dt = now - last.t || 16;
+    velocityRef.current = {
+      x: ((e.clientX - last.x) / dt) * 1000,
+      y: ((e.clientY - last.y) / dt) * 1000
+    };
+    lastMoveRef.current = { x: e.clientX, y: e.clientY, t: now };
+  };
+
+  const endPointer = (e?: React.PointerEvent) => {
+    draggingRef.current = false;
+    if (e) {
+      try { (e.currentTarget as Element).releasePointerCapture(e.pointerId); } catch {}
+    }
+    panRef.current = { x: pan.x, y: pan.y };
+    // start inertia if velocity is significant
+    const v = velocityRef.current;
+    const speed = Math.hypot(v.x, v.y);
+    const threshold = 200; // px/s
+    if (speed > threshold) {
+      let lastTime: number | null = null;
+      const frictionPer16ms = 0.92; // decay per 16ms
+
+      const step = (time: number) => {
+        if (lastTime === null) lastTime = time;
+        const dt = time - lastTime;
+        lastTime = time;
+
+        // apply movement
+        const dx = (v.x * dt) / 1000;
+        const dy = (v.y * dt) / 1000;
+
+        const wr = wrapperRef.current;
+        const wrapperW = wr?.clientWidth || 0;
+        const wrapperH = wr?.clientHeight || 0;
+        const maxX = Math.max(0, ((zoomScale - 1) * wrapperW) / 2 + 20);
+        const maxY = Math.max(0, ((zoomScale - 1) * wrapperH) / 2 + 20);
+
+        let nextX = panRef.current.x + dx;
+        let nextY = panRef.current.y + dy;
+
+        // clamp and zero velocity on hit
+        if (nextX < -maxX) { nextX = -maxX; v.x = 0; }
+        if (nextX > maxX) { nextX = maxX; v.x = 0; }
+        if (nextY < -maxY) { nextY = -maxY; v.y = 0; }
+        if (nextY > maxY) { nextY = maxY; v.y = 0; }
+
+        panRef.current = { x: nextX, y: nextY };
+        setPan({ x: nextX, y: nextY });
+
+        // apply friction
+        const factor = Math.pow(frictionPer16ms, dt / 16);
+        v.x *= factor;
+        v.y *= factor;
+
+        if (Math.hypot(v.x, v.y) > 30) {
+          rafRef.current = requestAnimationFrame(step);
+        } else {
+          rafRef.current = null;
+        }
+      };
+
+      rafRef.current = requestAnimationFrame(step);
+    }
+  };
   const [presentToast] = useIonToast();
   const [sellerReviews, setSellerReviews] = useState<Review[]>([]);
   const { addItem } = useCart();
@@ -145,7 +272,12 @@ const ProductDetail: React.FC = () => {
         color: 'success'
       });
 
-      history.replace('/profile');
+      // Mostrar confetti (emojis) por 3 segundos antes de redirigir
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+        history.replace('/profile');
+      }, 3000);
     } catch (error: any) {
       presentToast({
         message: error?.message || 'No se pudo completar la compra.',
@@ -217,6 +349,27 @@ const ProductDetail: React.FC = () => {
 
   return (
     <IonPage>
+      {showConfetti && (
+        <div className="confetti-overlay" aria-hidden>
+          {[...Array(16)].map((_, i) => {
+            const left = Math.random() * 100;
+            const top = 10 + Math.random() * 70;
+            const size = 18 + Math.random() * 36;
+            const delay = Math.random() * 0.6;
+            const emojis = ['🥳', '🎉', '🎊'];
+            const emoji = emojis[i % emojis.length];
+            return (
+              <span
+                key={i}
+                className="confetti-emoji"
+                style={{ left: `${left}%`, top: `${top}%`, fontSize: `${size}px`, animationDelay: `${delay}s` }}
+              >
+                {emoji}
+              </span>
+            );
+          })}
+        </div>
+      )}
       <IonHeader className="ion-no-border">
         <IonToolbar className="glass-header">
           <IonButtons slot="start">
@@ -237,10 +390,66 @@ const ProductDetail: React.FC = () => {
       </IonHeader>
 
       <IonContent>
-        {/* Imagen del Producto */}
+        {/* Imagen del Producto (click para ver y hacer zoom) */}
         <div className="detail-image-container">
-          <img src={product.imageUrls[0]} alt={product.title} className="detail-image" />
+          <img
+            src={product.imageUrls[0]}
+            alt={product.title}
+            className="detail-image"
+            onClick={() => { setShowImageModal(true); resetZoom(); }}
+            style={{ cursor: 'zoom-in' }}
+          />
         </div>
+
+        {/* Modal de Imagen con controles de zoom */}
+        <IonModal isOpen={showImageModal} onDidDismiss={() => {
+          setShowImageModal(false);
+          resetZoom();
+          setPan({ x: 0, y: 0 });
+          panRef.current = { x: 0, y: 0 };
+          if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+        }}>
+          <IonHeader className="ion-no-border">
+            <IonToolbar className="glass-header">
+              <IonButtons slot="start">
+                <IonButton onClick={() => { setShowImageModal(false); resetZoom(); }}>Cerrar</IonButton>
+              </IonButtons>
+              <IonButtons slot="end">
+                <IonButton onClick={() => changeZoom(-0.25)} disabled={zoomScale <= MIN_ZOOM}>-</IonButton>
+                <IonButton onClick={() => resetZoom()}>Reset</IonButton>
+                <IonButton onClick={() => changeZoom(0.25)} disabled={zoomScale >= MAX_ZOOM}>+</IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <div
+              className="zoom-image-wrapper"
+              ref={wrapperRef}
+              onWheel={(e: React.WheelEvent) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.15 : 0.15;
+                changeZoom(delta);
+              }}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={endPointer}
+              onPointerCancel={endPointer}
+              onTouchStart={(e) => { if (zoomScale > 1) e.preventDefault(); }}
+            >
+              <img
+                ref={imageRef}
+                src={product.imageUrls[0]}
+                alt={product.title}
+                className="zoom-modal-image"
+                style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})` }}
+                onDoubleClick={() => setZoomScale(prev => prev === 1 ? 2 : 1)}
+              />
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 12 }}>
+              <small style={{ color: 'var(--ion-color-medium)' }}>Usa la rueda del mouse o los botones para hacer zoom. Doble clic para alternar.</small>
+            </div>
+          </IonContent>
+        </IonModal>
 
         {/* Detalles del Producto */}
         <div className="detail-content">

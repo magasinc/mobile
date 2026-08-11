@@ -15,6 +15,7 @@ import {
   IonIcon,
   IonSpinner,
   useIonViewWillEnter,
+  useIonToast,
   IonButton,
   IonModal,
   IonItem,
@@ -44,6 +45,9 @@ const Feed: React.FC = () => {
   const [minPriceFilter, setMinPriceFilter] = useState<number | null>(null);
   const [maxPriceFilter, setMaxPriceFilter] = useState<number | null>(null);
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
+  const [showSupportModal, setShowSupportModal] = useState<boolean>(false);
+  const [suggestionText, setSuggestionText] = useState<string>('');
+  const [presentToast] = useIonToast();
 
   // Ref to hold current filter state for useIonViewWillEnter (avoids stale closures)
   const filtersRef = useRef({ selectedCategory, searchQuery, sizeFilter, conditionFilter, minPriceFilter, maxPriceFilter });
@@ -128,6 +132,20 @@ const Feed: React.FC = () => {
     setShowFilterModal(false);
   };
 
+  const handleSendSuggestion = async () => {
+    // Simular envío: aquí podrías integrar un endpoint real
+    try {
+      // placeholder: enviar a API o guardarlo
+      console.log('Sugerencia enviada:', suggestionText);
+      presentToast({ message: 'Sugerencia enviada. ¡Gracias!', duration: 2000, color: 'success' });
+      setSuggestionText('');
+      setShowSupportModal(false);
+    } catch (e) {
+      console.error(e);
+      presentToast({ message: 'No se pudo enviar la sugerencia.', duration: 2000, color: 'danger' });
+    }
+  };
+
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
@@ -135,6 +153,11 @@ const Feed: React.FC = () => {
           <div className="feed-header-content">
             <span className="logo-text">Thread<span className="logo-accent">Blue</span></span>
           </div>
+          <IonButtons slot="end">
+            <IonButton fill="clear" onClick={() => setShowSupportModal(true)} aria-label="Soporte">
+              <IonIcon icon={(icons as any).helpCircleOutline} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
         <IonToolbar className="search-toolbar">
           <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '0 8px' }}>
@@ -192,7 +215,15 @@ const Feed: React.FC = () => {
           <IonGrid className="products-grid ion-no-padding">
             <IonRow>
               {products.map((prod) => (
-                <IonCol size="6" key={prod.id} className="ion-no-padding grid-col">
+                <IonCol
+                  key={prod.id}
+                  className="ion-no-padding grid-col"
+                  size="12"
+                  sizeSm="6"
+                  sizeMd="6"
+                  sizeLg="4"
+                  sizeXl="3"
+                >
                   <ProductCard product={prod} />
                 </IonCol>
               ))}
@@ -288,6 +319,37 @@ const Feed: React.FC = () => {
             <IonButton expand="block" shape="round" onClick={handleApplyFilters} style={{ marginTop: 40 }}>
               Aplicar Filtros
             </IonButton>
+          </IonContent>
+        </IonModal>
+
+        {/* Modal de Soporte */}
+        <IonModal isOpen={showSupportModal} onDidDismiss={() => setShowSupportModal(false)}>
+          <IonHeader className="ion-no-border">
+            <IonToolbar className="glass-header">
+              <IonButtons slot="start">
+                <IonButton onClick={() => setShowSupportModal(false)}>Cancelar</IonButton>
+              </IonButtons>
+              <h3 style={{ margin: '0 auto', textAlign: 'center', fontWeight: 700, fontSize: '1.05rem', flex: 1 }}>Soporte</h3>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <h4 style={{ fontWeight: 600, fontSize: '0.95rem', marginTop: 8 }}>Tienes alguna sugerencia?</h4>
+            <IonItem lines="none" style={{ marginTop: 12 }}>
+              <IonLabel position="stacked">Escribe tu sugerencia</IonLabel>
+              <IonInput
+                value={suggestionText}
+                placeholder="Qué mejorarías, problema encontrado, idea..."
+                onIonInput={(e: any) => setSuggestionText(e.detail.value)}
+                rows={4}
+                autoGrow={true}
+                type="text"
+              />
+            </IonItem>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 28 }}>
+              <IonButton expand="block" fill="clear" onClick={() => setShowSupportModal(false)}>Cancelar</IonButton>
+              <IonButton expand="block" onClick={handleSendSuggestion} disabled={!suggestionText || suggestionText.trim().length === 0}>Enviar</IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
