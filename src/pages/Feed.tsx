@@ -21,6 +21,7 @@ import {
   IonItem,
   IonLabel,
   IonInput,
+  IonTextarea,
   IonSelect,
   IonSelectOption,
   IonButtons
@@ -336,13 +337,12 @@ const Feed: React.FC = () => {
             <h4 style={{ fontWeight: 600, fontSize: '0.95rem', marginTop: 8 }}>Tienes alguna sugerencia?</h4>
             <IonItem lines="none" style={{ marginTop: 12 }}>
               <IonLabel position="stacked">Escribe tu sugerencia</IonLabel>
-              <IonInput
+              <IonTextarea
                 value={suggestionText}
                 placeholder="Qué mejorarías, problema encontrado, idea..."
                 onIonInput={(e: any) => setSuggestionText(e.detail.value)}
                 rows={4}
                 autoGrow={true}
-                type="text"
               />
             </IonItem>
 
